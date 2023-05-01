@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = [
+    "bevy-entity-relations/client",
+    "bevy-entity-relations/server",
+    "bevy-entity-relations/shared",
+]
+
+[profile.release]
+opt-level = 's'
+lto = true
