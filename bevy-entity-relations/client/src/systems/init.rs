@@ -2,7 +2,7 @@ use bevy::prelude::{
     info, shape, Assets, Camera2dBundle, Color, ColorMaterial, Commands, Mesh, ResMut,
 };
 
-use naia_bevy_client::{transport::webrtc, Client, CommandsExt, Random};
+use naia_bevy_client::{transport::webrtc, Client, CommandsExt, Random, ReplicationConfig};
 use bevy_entity_relations_shared::{components::Baseline, messages::Auth};
 
 use crate::resources::Global;
@@ -51,7 +51,7 @@ pub fn init(
             // Spawn new Entity
             .spawn_empty()
             // MUST call this to begin replication
-            .enable_replication(&mut client)
+            .configure_replication(&mut client, ReplicationConfig::Public)
             // Insert Baseline component
             .insert(baseline)
             // return Entity id

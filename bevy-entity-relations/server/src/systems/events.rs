@@ -9,10 +9,10 @@ use naia_bevy_server::{
     events::{
         AuthEvents, ConnectEvent, DespawnEntityEvent, DisconnectEvent, ErrorEvent,
         InsertComponentEvents, RemoveComponentEvents, SpawnEntityEvent, TickEvent,
-        UpdateComponentEvents,
     },
     CommandsExt, Random, Server,
 };
+use naia_bevy_server::events::PublishEntityEvent;
 
 use bevy_entity_relations_shared::{
     behavior as shared_behavior,
@@ -129,14 +129,6 @@ pub fn disconnect_events(
                 .room_mut(&global.main_room_key)
                 .remove_entity(&entity);
         }
-        if let Some(client_entity) = global.user_to_cursor_map.remove(user_key) {
-            if let Some(server_entity) = global.client_to_server_cursor_map.remove(&client_entity) {
-                commands.entity(server_entity).despawn();
-                server
-                    .room_mut(&global.main_room_key)
-                    .remove_entity(&server_entity);
-            }
-        }
         global.client_baselines.remove(user_key);
     }
 }
@@ -232,6 +224,21 @@ pub fn despawn_entity_events(mut event_reader: EventReader<DespawnEntityEvent>) 
     }
 }
 
+pub fn publish_entity_events(
+    mut server: Server,
+    global: ResMut<Global>,
+    mut event_reader: EventReader<PublishEntityEvent>,
+) {
+    for PublishEntityEvent(_user_key, client_entity) in event_reader.iter() {
+        info!("client entity has been made public");
+
+        // Add newly public entity to the main Room
+        server
+            .room_mut(&global.main_room_key)
+            .add_entity(client_entity);
+    }
+}
+
 pub fn insert_component_events(
     mut commands: Commands,
     mut server: Server,
@@ -240,7 +247,7 @@ pub fn insert_component_events(
     position_query: Query<&Position>,
 ) {
     for events in event_reader.iter() {
-        for (user_key, client_entity) in events.read::<Position>() {
+        for (_user_key, client_entity) in events.read::<Position>() {
             info!("insert component into client entity");
 
             if let Ok(client_position) = position_query.get(client_entity) {
@@ -279,34 +286,10 @@ pub fn insert_component_events(
                 server
                     .room_mut(&global.main_room_key)
                     .add_entity(&server_entity);
-
-                global.user_to_cursor_map.insert(user_key, client_entity);
-                global
-                    .client_to_server_cursor_map
-                    .insert(client_entity, server_entity);
             }
         }
         for (user_key, client_entity) in events.read::<Baseline>() {
             global.client_baselines.insert(user_key, client_entity);
-        }
-    }
-}
-
-pub fn update_component_events(
-    global: ResMut<Global>,
-    mut event_reader: EventReader<UpdateComponentEvents>,
-    mut position_query: Query<&mut Position>,
-) {
-    for events in event_reader.iter() {
-        for (_user_key, client_entity) in events.read::<Position>() {
-            if let Some(server_entity) = global.client_to_server_cursor_map.get(&client_entity) {
-                if let Ok([client_position, mut server_position]) =
-                    position_query.get_many_mut([client_entity, *server_entity])
-                {
-                    server_position.x.mirror(&client_position.x);
-                    server_position.y.mirror(&client_position.y);
-                }
-            }
         }
     }
 }

@@ -10,13 +10,10 @@ use bevy::{
     sprite::MaterialMesh2dBundle,
 };
 
-use naia_bevy_client::{
-    events::{
-        ClientTickEvent, ConnectEvent, DespawnEntityEvent, DisconnectEvent, InsertComponentEvents,
-        MessageEvents, RejectEvent, RemoveComponentEvents, SpawnEntityEvent, UpdateComponentEvents,
-    },
-    sequence_greater_than, Client, CommandsExt, Random, Replicate, Tick,
-};
+use naia_bevy_client::{events::{
+    ClientTickEvent, ConnectEvent, DespawnEntityEvent, DisconnectEvent, InsertComponentEvents,
+    MessageEvents, RejectEvent, RemoveComponentEvents, SpawnEntityEvent, UpdateComponentEvents,
+}, sequence_greater_than, Client, CommandsExt, Random, Replicate, Tick, ReplicationConfig};
 
 use bevy_entity_relations_shared::{
     behavior as shared_behavior,
@@ -46,41 +43,23 @@ pub fn connect_events(
 
         // Create entity for Client-authoritative Cursor
 
-        // Position component
-        let position = {
-            let x = 16 * ((Random::gen_range_u32(0, 40) as i16) - 20);
-            let y = 16 * ((Random::gen_range_u32(0, 30) as i16) - 15);
-            Position::new(x, y)
-        };
-
-        // Relation component
-        let mut relation = Relation::new();
-        relation
-            .entity
-            .set(&client, &global.baseline_entity.unwrap());
-
         // Spawn Cursor Entity
         let cursor_entity = commands
             // Spawn new Square Entity
             .spawn_empty()
-            // MUST call this to begin replication
-            .enable_replication(&mut client)
+            // MUST call this OR `enable_replication` to begin replication
+            .configure_replication(&mut client, ReplicationConfig::Public)
             // Insert Position component
-            .insert(position)
-            // Insert Relation component
-            //.insert(relation)
+            .insert(Position::new(
+                16 * ((Random::gen_range_u32(0, 40) as i16) - 20),
+                16 * ((Random::gen_range_u32(0, 30) as i16) - 15),
+            ))
+            // Insert Shape component
+            .insert(Shape::new(ShapeValue::Circle))
             // Insert Cursor marker component
             .insert(LocalCursor)
             // return Entity id
             .id();
-
-        // Insert SpriteBundle locally only
-        commands.entity(cursor_entity).insert(MaterialMesh2dBundle {
-            mesh: global.circle.clone().into(),
-            material: global.white.clone(),
-            transform: Transform::from_xyz(0.0, 0.0, 1.0),
-            ..Default::default()
-        });
 
         global.cursor_entity = Some(cursor_entity);
     }
@@ -104,6 +83,7 @@ pub fn message_events(
     mut global: ResMut<Global>,
     mut event_reader: EventReader<MessageEvents>,
     position_query: Query<&Position>,
+    color_query: Query<&Color>,
 ) {
     for events in event_reader.iter() {
         for message in events.read::<EntityAssignmentChannel, EntityAssignment>() {
@@ -117,7 +97,7 @@ pub fn message_events(
                 if let Ok(position) = position_query.get(entity) {
                     let prediction_entity = commands
                         .entity(entity)
-                        .duplicate() // copies all Replicate components as well
+                        .local_duplicate() // copies all Replicate components as well
                         .insert(SpriteBundle {
                             sprite: Sprite {
                                 custom_size: Some(Vec2::new(SQUARE_SIZE, SQUARE_SIZE)),
@@ -134,6 +114,34 @@ pub fn message_events(
                         .id();
 
                     global.owned_entity = Some(OwnedEntity::new(entity, prediction_entity));
+                }
+                // Now that we know the Color of the player, we assign it to our Cursor
+                if let Ok(color) = color_query.get(entity) {
+                    if let Some(cursor_entity) = global.cursor_entity {
+                        // Add Color to cursor entity
+                        commands.entity(cursor_entity).insert(color.clone());
+
+                        // Insert SpriteBundle locally only
+                        let color_handle = {
+                            match *color.value {
+                                ColorValue::Red => &global.red,
+                                ColorValue::Blue => &global.blue,
+                                ColorValue::Yellow => &global.yellow,
+                                ColorValue::Green => &global.green,
+                                ColorValue::White => &global.white,
+                                ColorValue::Purple => &global.purple,
+                                ColorValue::Orange => &global.orange,
+                                ColorValue::Aqua => &global.aqua,
+                            }
+                        };
+                        commands.entity(cursor_entity).insert(MaterialMesh2dBundle {
+                            mesh: global.circle.clone().into(),
+                            material: color_handle.clone(),
+                            transform: Transform::from_xyz(0.0, 0.0, 0.0),
+                            ..Default::default()
+                        });
+                        info!("assigned color to cursor");
+                    }
                 }
             } else {
                 let mut disowned: bool = false;
