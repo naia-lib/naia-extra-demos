@@ -51,6 +51,8 @@ pub fn init(
             // Spawn new Entity
             .spawn_empty()
             // MUST call this to begin replication
+            .enable_replication(&mut client)
+            // make this Entity public, which means that it will be replicated to all other clients
             .configure_replication(&mut client, ReplicationConfig::Public)
             // Insert Baseline component
             .insert(baseline)

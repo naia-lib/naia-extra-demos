@@ -47,7 +47,9 @@ pub fn connect_events(
         let cursor_entity = commands
             // Spawn new Square Entity
             .spawn_empty()
-            // MUST call this OR `enable_replication` to begin replication
+            // MUST call this to begin replication
+            .enable_replication(&mut client)
+            // make this Entity public, which means that it will be replicated to all other clients
             .configure_replication(&mut client, ReplicationConfig::Public)
             // Insert Position component
             .insert(Position::new(
