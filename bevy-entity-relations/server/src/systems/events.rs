@@ -55,27 +55,6 @@ pub fn connect_events(
 
         // Create components for Entity to represent new player
 
-        // Position component
-        let position = {
-            let x = 16 * ((Random::gen_range_u32(0, 40) as i16) - 20);
-            let y = 16 * ((Random::gen_range_u32(0, 30) as i16) - 15);
-            Position::new(x, y)
-        };
-
-        // Color component
-        let color = {
-            let color_value = match server.users_count() % 4 {
-                0 => ColorValue::Yellow,
-                1 => ColorValue::Red,
-                2 => ColorValue::Blue,
-                _ => ColorValue::Green,
-            };
-            Color::new(color_value)
-        };
-
-        // Shape component
-        let shape = Shape::new(ShapeValue::Square);
-
         // Relation component
         let mut relation = Relation::new();
         relation.entity.set(&server, &global.server_baseline_1);
@@ -87,11 +66,16 @@ pub fn connect_events(
             // MUST call this to begin replication
             .enable_replication(&mut server)
             // Insert Position component
-            .insert(position)
+            .insert(Position::new(16 * ((Random::gen_range_u32(0, 40) as i16) - 20), 16 * ((Random::gen_range_u32(0, 30) as i16) - 15)))
             // Insert Color component
-            .insert(color)
+            .insert(Color::new(match server.users_count() % 4 {
+                0 => ColorValue::Yellow,
+                1 => ColorValue::Red,
+                2 => ColorValue::Blue,
+                _ => ColorValue::Green,
+            }))
             // Insert Shape component
-            .insert(shape)
+            .insert(Shape::new(ShapeValue::Square))
             // Insert Relation component
             .insert(relation)
             // return Entity id
@@ -103,6 +87,7 @@ pub fn connect_events(
         global.square_to_user_map.insert(entity, *user_key);
 
         // Send an Entity Assignment message to the User that owns the Square
+
         let mut assignment_message = EntityAssignment::new(true);
         assignment_message.entity.set(&server, &entity);
 
@@ -183,25 +168,18 @@ pub fn tick_events(
         *timer += 1;
         if *timer >= 30 {
             *timer = 0;
-            info!("Timer went off!");
             for (square_entity, mut relation) in relation_query.iter_mut() {
-                info!(" - have entity");
                 if let Some(relation_entity) = relation.entity.get(&server) {
-                    info!(" - have relation entity");
                     if let Some(user_key) = global.square_to_user_map.get(&square_entity) {
-                        info!(" - have user key");
                         if relation_entity == global.server_baseline_1 {
-                            info!(" - relation is server baseline 1, switching to server baseline 2");
                             // switch to baseline 2
                             relation.entity.set(&server, &global.server_baseline_2);
                         } else if relation_entity == global.server_baseline_2 {
-                            info!(" - relation is server baseline 2, switching to client baseline");
                             // switch to client's baseline
                             if let Some(client_baseline) = global.client_baselines.get(&user_key) {
                                 relation.entity.set(&server, client_baseline);
                             }
                         } else {
-                            info!(" - relation is client baseline, switching to server baseline 1");
                             // switch to baseline 1
                             relation.entity.set(&server, &global.server_baseline_1);
                         }
@@ -240,54 +218,10 @@ pub fn publish_entity_events(
 }
 
 pub fn insert_component_events(
-    mut commands: Commands,
-    mut server: Server,
     mut global: ResMut<Global>,
     mut event_reader: EventReader<InsertComponentEvents>,
-    position_query: Query<&Position>,
 ) {
     for events in event_reader.iter() {
-        for (_user_key, client_entity) in events.read::<Position>() {
-            info!("insert component into client entity");
-
-            if let Ok(client_position) = position_query.get(client_entity) {
-                // New Position Component
-                let server_position = Position::new(*client_position.x, *client_position.y);
-
-                // New Color component
-                let color = {
-                    let color_value = match server.users_count() % 4 {
-                        0 => ColorValue::Yellow,
-                        1 => ColorValue::Red,
-                        2 => ColorValue::Blue,
-                        _ => ColorValue::Green,
-                    };
-                    Color::new(color_value)
-                };
-
-                // New Shape component
-                let shape = Shape::new(ShapeValue::Circle);
-
-                // Spawn entity
-                let server_entity = commands
-                    // Spawn new Square Entity
-                    .spawn_empty()
-                    // MUST call this to begin replication
-                    .enable_replication(&mut server)
-                    // Insert Position component
-                    .insert(server_position)
-                    // Insert Color component
-                    .insert(color)
-                    // Insert Shape component
-                    .insert(shape)
-                    // return Entity id
-                    .id();
-
-                server
-                    .room_mut(&global.main_room_key)
-                    .add_entity(&server_entity);
-            }
-        }
         for (user_key, client_entity) in events.read::<Baseline>() {
             global.client_baselines.insert(user_key, client_entity);
         }
