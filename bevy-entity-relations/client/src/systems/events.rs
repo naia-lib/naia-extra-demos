@@ -50,7 +50,7 @@ pub fn connect_events(
             // MUST call this to begin replication
             .enable_replication(&mut client)
             // make this Entity public, which means that it will be replicated to all other clients
-            .configure_replication(&mut client, ReplicationConfig::Public)
+            .configure_replication(ReplicationConfig::Public)
             // Insert Position component
             .insert(Position::new(
                 16 * ((Random::gen_range_u32(0, 40) as i16) - 20),
