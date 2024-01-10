@@ -2,3 +2,9 @@
 **/*.rs.bk
 /Cargo.lock
 node_modules
+/multi-client-socket/client/miniquad/target
+/multi-client-socket/client/miniquad/target/
+/multi-client-socket/client/miniquad/target/*
+/multi-client-socket/client/wasm_bindgen/target
+/multi-client-socket/client/wasm_bindgen/target/
+/multi-client-socket/client/wasm_bindgen/target/*
