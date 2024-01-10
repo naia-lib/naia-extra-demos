@@ -1,5 +1,5 @@
 [package]
-name = "naia-socket-client-demo-mq"
+name = "multi-client-socket-client-mq"
 version = "0.1.0"
 authors = ["connorcarpenter <connorcarpenter@gmail.com>"]
 workspace = "../../.."
@@ -14,6 +14,6 @@ path = "src/main.rs"
 [features]
 
 [dependencies]
-naia-socket-client-demo-app = { path = "../app", features = [ "mquad" ] }
+multi-client-socket-client-app = { path = "../app", features = [ "mquad" ] }
 cfg-if = { version = "1.0" }
 miniquad = { version = "0.3", features = ["log-impl"] }

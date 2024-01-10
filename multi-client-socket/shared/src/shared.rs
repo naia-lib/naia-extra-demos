@@ -1,9 +1,9 @@
 use naia_socket_shared::{LinkConditionerConfig, SocketConfig};
 
-pub const PING_MSG: &str = "PING";
-pub const PONG_MSG: &str = "PONG";
+pub const PING_MSG_A: &str = "PING A";
+pub const PONG_MSG_A: &str = "PONG A";
 
-pub fn shared_config() -> SocketConfig {
+pub fn shared_config_a() -> SocketConfig {
     //let link_condition = None;
     let link_condition = Some(LinkConditionerConfig::average_condition());
     //    let link_condition = Some(LinkConditionerConfig {

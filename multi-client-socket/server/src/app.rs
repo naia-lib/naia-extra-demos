@@ -2,7 +2,7 @@ use std::{thread::sleep, time::Duration};
 
 use naia_server_socket::{PacketReceiver, PacketSender, ServerAddrs, Socket};
 
-use naia_socket_demo_shared::{shared_config, PING_MSG, PONG_MSG};
+use multi_client_socket_shared_a::{shared_config_a, PING_MSG_A, PONG_MSG_A};
 
 pub struct App {
     packet_sender: Box<dyn PacketSender>,
@@ -11,7 +11,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        info!("Naia Server Socket Demo started");
+        info!("Multi-Client Socket Server A started");
 
         let server_address = ServerAddrs::new(
             "127.0.0.1:14191"
@@ -24,7 +24,7 @@ impl App {
             // The public WebRTC IP address to advertise
             "http://127.0.0.1:14192",
         );
-        let shared_config = shared_config();
+        let shared_config = shared_config_a();
 
         let (packet_sender, packet_receiver) = Socket::listen(&server_address, &shared_config);
 
@@ -38,11 +38,11 @@ impl App {
         match self.packet_receiver.receive() {
             Ok(Some((address, payload))) => {
                 let message_from_client = String::from_utf8_lossy(payload);
-                info!("Server recv <- {}: {}", address, message_from_client);
+                info!("Server A recv <- {}: {}", address, message_from_client);
 
-                if message_from_client.eq(PING_MSG) {
-                    let message_to_client: String = PONG_MSG.to_string();
-                    info!("Server send -> {}: {}", address, message_to_client);
+                if message_from_client.eq(PING_MSG_A) {
+                    let message_to_client: String = PONG_MSG_A.to_string();
+                    info!("Server A send -> {}: {}", address, message_to_client);
                     match self
                         .packet_sender
                         .send(&address, message_to_client.as_bytes())
@@ -59,7 +59,7 @@ impl App {
                 sleep(Duration::from_millis(1));
             }
             Err(error) => {
-                info!("Server Error: {}", error);
+                info!("Server A Error: {}", error);
             }
         }
     }

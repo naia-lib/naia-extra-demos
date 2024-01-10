@@ -1,5 +1,5 @@
 [package]
-name = "naia-socket-demo-shared"
+name = "multi-client-socket-shared-a"
 version = "0.1.0"
 authors = ["connorcarpenter <connorcarpenter@gmail.com>"]
 workspace = "../.."

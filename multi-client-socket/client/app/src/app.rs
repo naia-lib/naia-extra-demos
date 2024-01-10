@@ -12,7 +12,7 @@ use naia_client_socket::{PacketReceiver, PacketSender, ServerAddr, Socket};
 
 use naia_shared::Timer;
 
-use naia_socket_demo_shared::{shared_config, PING_MSG, PONG_MSG};
+use multi_client_socket_shared_a::{shared_config_a, PING_MSG_A, PONG_MSG_A};
 
 pub struct App {
     packet_sender: Box<dyn PacketSender>,
@@ -27,7 +27,7 @@ impl App {
         info!("Naia Client Socket Demo started");
 
         let (packet_sender, packet_receiver) =
-            Socket::connect("http://127.0.0.1:14191", &shared_config());
+            Socket::connect("http://127.0.0.1:14191", &shared_config_a());
 
         App {
             packet_sender,
@@ -55,7 +55,7 @@ impl App {
                     message_from_server
                 );
 
-                if message_from_server.eq(PONG_MSG) {
+                if message_from_server.eq(PONG_MSG_A) {
                     self.message_count += 1;
 
                     if self.message_count == 10 {
@@ -68,7 +68,7 @@ impl App {
                     if self.timer.ringing() {
                         self.timer.reset();
 
-                        let message_to_server: String = PING_MSG.to_string();
+                        let message_to_server: String = PING_MSG_A.to_string();
 
                         let server_addr = match self.packet_receiver.server_addr() {
                             ServerAddr::Found(addr) => addr.to_string(),

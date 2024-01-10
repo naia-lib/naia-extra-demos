@@ -1,5 +1,5 @@
 [package]
-name = "naia-server-socket-demo"
+name = "multi-client-socket-server-a"
 version = "0.1.0"
 authors = ["connorcarpenter <connorcarpenter@gmail.com>"]
 workspace = "../.."
@@ -9,6 +9,6 @@ publish = false
 
 [dependencies]
 naia-server-socket = { path = "../../../naia/socket/server" }
-naia-socket-demo-shared = { path = "../shared" }
+multi-client-socket-shared-a = { path = "../shared" }
 log = { version = "0.4" }
 simple_logger = { version = "4.0", default-features = false, features = ["timestamps"] }

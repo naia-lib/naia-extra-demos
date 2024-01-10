@@ -1,6 +1,6 @@
 use miniquad::*;
 
-use naia_socket_client_demo_app::App;
+use multi_client_socket_client_app::App;
 
 struct Stage {
     app: App,
