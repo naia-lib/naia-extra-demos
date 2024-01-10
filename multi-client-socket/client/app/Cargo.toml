@@ -13,6 +13,7 @@ wbindgen = [ "naia-client-socket/wbindgen", "multi-client-socket-shared-a/wbindg
 
 [dependencies]
 multi-client-socket-shared-a = { path = "../../shared_a" }
+multi-client-socket-shared-b = { path = "../../shared_b" }
 
 naia-client-socket = { path = "../../../../naia/socket/client" }
 naia-shared = { path = "../../../../naia/shared" }

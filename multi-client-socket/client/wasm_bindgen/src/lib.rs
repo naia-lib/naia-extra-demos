@@ -8,7 +8,7 @@ cfg_if! {
 
         use wasm_bindgen::prelude::*;
 
-        use naia_socket_client_demo_app::App;
+        use multi_client_socket_client_app::App;
 
         use app_loop::start_loop;
 

@@ -49,7 +49,7 @@ impl App {
                     {
                         Ok(()) => {}
                         Err(error) => {
-                            info!("Server Send Error {}", error);
+                            info!("Server A Send Error {}", error);
                         }
                     }
                 }
