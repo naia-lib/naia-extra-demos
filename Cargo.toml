@@ -4,6 +4,11 @@ members = [
     "bevy-entity-relations/client",
     "bevy-entity-relations/server",
     "bevy-entity-relations/shared",
+    "multi-client-socket/client/app",
+    "multi-client-socket/client/miniquad",
+    "multi-client-socket/client/wasm_bindgen",
+    "multi-client-socket/shared",
+    "multi-client-socket/server",
 ]
 
 [profile.release]
