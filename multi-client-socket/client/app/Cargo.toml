@@ -12,7 +12,7 @@ mquad = [ "naia-client-socket/mquad", "multi-client-socket-shared-a/mquad", "nai
 wbindgen = [ "naia-client-socket/wbindgen", "multi-client-socket-shared-a/wbindgen", "naia-shared/wbindgen", "log" ]
 
 [dependencies]
-multi-client-socket-shared-a = { path = "../../shared" }
+multi-client-socket-shared-a = { path = "../../shared_a" }
 
 naia-client-socket = { path = "../../../../naia/socket/client" }
 naia-shared = { path = "../../../../naia/shared" }

@@ -7,8 +7,10 @@ members = [
     "multi-client-socket/client/app",
     "multi-client-socket/client/miniquad",
     "multi-client-socket/client/wasm_bindgen",
-    "multi-client-socket/shared",
-    "multi-client-socket/server",
+    "multi-client-socket/shared_a",
+    "multi-client-socket/server_a",
+    "multi-client-socket/shared_b",
+    "multi-client-socket/server_b",
 ]
 
 [profile.release]
