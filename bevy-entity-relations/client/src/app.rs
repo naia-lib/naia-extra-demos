@@ -1,11 +1,13 @@
 use bevy::{
     prelude::{
-        App, ClearColor, Color, IntoSystemConfig, IntoSystemConfigs, IntoSystemSetConfig, SystemSet,
+        App, ClearColor, Color, SystemSet,
     },
     DefaultPlugins,
+    app::{Startup, Update},
 };
 
-use naia_bevy_client::{ClientConfig, Plugin as ClientPlugin, ReceiveEvents};
+use naia_bevy_client::{ClientConfig, Plugin as ClientPlugin};
+
 use bevy_entity_relations_shared::protocol;
 
 use crate::systems::{events, init, input, sync};
@@ -21,45 +23,31 @@ pub fn run() {
         // Bevy Plugins
         .add_plugins(DefaultPlugins)
         // Add Naia Client Plugin
-        .add_plugin(ClientPlugin::new(ClientConfig::default(), protocol()))
+        .add_plugins(ClientPlugin::new(ClientConfig::default(), protocol()))
         // Background Color
         .insert_resource(ClearColor(Color::BLACK))
         // Startup System
-        .add_startup_system(init)
+        .add_systems(Startup, init)
         // Receive Client Events
-        .add_systems(
-            (
-                events::connect_events,
-                events::disconnect_events,
-                events::reject_events,
-                events::spawn_entity_events,
-                events::despawn_entity_events,
-                events::insert_component_events,
-                events::update_component_events,
-                events::remove_component_events,
-                events::message_events,
-            )
-                .chain()
-                .in_set(ReceiveEvents),
-        )
+        .add_systems(Update, events::connect_events)
+        .add_systems(Update, events::disconnect_events)
+        .add_systems(Update, events::reject_events)
+        .add_systems(Update, events::spawn_entity_events)
+        .add_systems(Update, events::despawn_entity_events)
+        .add_systems(Update, events::insert_component_events)
+        .add_systems(Update, events::update_component_events)
+        .add_systems(Update, events::remove_component_events)
+        .add_systems(Update, events::message_events)
         // Tick Event
-        .configure_set(Tick.after(ReceiveEvents))
-        .add_system(events::tick_events.in_set(Tick))
+        .add_systems(Update, events::tick_events)
         // Realtime Gameplay Loop
-        .configure_set(MainLoop.after(Tick))
-        .add_systems(
-            (
-                input::key_input,
-                input::cursor_input,
-                sync::sync_clientside_sprites,
-                sync::sync_serverside_sprites,
-                sync::sync_cursor_sprite,
-                sync::sync_relation_lines,
-                sync::sync_baseline,
-            )
-                .chain()
-                .in_set(MainLoop),
-        )
+        .add_systems(Update, input::key_input)
+        .add_systems(Update, input::cursor_input)
+        .add_systems(Update, sync::sync_clientside_sprites)
+        .add_systems(Update, sync::sync_serverside_sprites)
+        .add_systems(Update, sync::sync_cursor_sprite)
+        .add_systems(Update, sync::sync_relation_lines)
+        .add_systems(Update, sync::sync_baseline)
         // Run App
         .run();
 }

@@ -11,7 +11,7 @@ publish = false
 bevy-entity-relations-shared = { path = "../shared" }
 naia-bevy-server = { path = "../../../naia/adapters/bevy/server", features = [ "transport_webrtc" ] }
 
-bevy_app = { version = "0.10", default-features=false }
-bevy_core = { version = "0.10", default-features=false }
-bevy_ecs = { version = "0.10", default-features=false }
-bevy_log = { version = "0.10", default-features=false }
+bevy_app = { version = "0.12.1", default-features=false }
+bevy_core = { version = "0.12.1", default-features=false }
+bevy_ecs = { version = "0.12.1", default-features=false }
+bevy_log = { version = "0.12.1", default-features=false }

@@ -1,8 +1,10 @@
-use bevy::prelude::{
-    info, shape, Assets, Camera2dBundle, Color, ColorMaterial, Commands, Mesh, ResMut,
-};
+
+use bevy::{log::info, prelude::{
+    shape, Assets, Camera2dBundle, Color, ColorMaterial, Commands, Mesh, ResMut,
+}};
 
 use naia_bevy_client::{transport::webrtc, Client, CommandsExt, Random, ReplicationConfig};
+
 use bevy_entity_relations_shared::{components::Baseline, messages::Auth};
 
 use crate::resources::Global;
