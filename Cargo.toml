@@ -16,6 +16,8 @@ members = [
     "multi-client/client/wasm_bindgen",
     "multi-client/server_a/protocol",
     "multi-client/server_a",
+    "multi-client/server_b/protocol",
+    "multi-client/server_b",
 ]
 
 [profile.release]

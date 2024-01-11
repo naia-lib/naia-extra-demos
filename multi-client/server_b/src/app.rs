@@ -8,7 +8,7 @@ use naia_server::{
 
 use naia_demo_world::{Entity, World};
 
-use multi_client_server_a_protocol::{protocol, Auth, StringMessage};
+use multi_client_server_b_protocol::{protocol, Auth, StringMessage};
 
 type Server = NaiaServer<Entity>;
 
@@ -20,20 +20,20 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        info!("Multi-Client Server A started");
+        info!("Multi-Client Server B started");
 
         let world = World::default();
 
         let server_addresses = webrtc::ServerAddrs::new(
-            "127.0.0.1:14191"
+            "127.0.0.1:14193"
                 .parse()
                 .expect("could not parse Signaling address/port"),
             // IP Address to listen on for UDP WebRTC data channels
-            "127.0.0.1:14192"
+            "127.0.0.1:14194"
                 .parse()
                 .expect("could not parse WebRTC data address/port"),
             // The public WebRTC IP address to advertise
-            "http://127.0.0.1:14192",
+            "http://127.0.0.1:14194",
         );
         let protocol = protocol();
         let socket = webrtc::Socket::new(&server_addresses, &protocol.socket);
@@ -65,19 +65,19 @@ impl App {
             }
             for user_key in events.read::<ConnectEvent>() {
                 info!(
-                    "Server A connected to: {}",
+                    "Server B connected to: {}",
                     self.server.user(&user_key).address()
                 );
             }
             for (_user_key, user) in events.read::<DisconnectEvent>() {
-                info!("Server A disconnected from: {:?}", user.address);
+                info!("Server B disconnected from: {:?}", user.address);
             }
             for (user_key, message) in
                 events.read::<MessageEvent<UnorderedReliableChannel, StringMessage>>()
             {
                 let message_contents = &(*message.contents);
                 info!(
-                    "Server A recv from ({}) <- {}",
+                    "Server B recv from ({}) <- {}",
                     self.server.user(&user_key).address(),
                     message_contents
                 );
@@ -87,9 +87,9 @@ impl App {
 
                 // Message sending
                 for user_key in self.server.user_keys() {
-                    let new_message_contents = format!("Server A message ({})", self.tick_count);
+                    let new_message_contents = format!("Server B Message ({})", self.tick_count);
                     info!(
-                        "Server A send to   ({}) -> {}",
+                        "Server B send to   ({}) -> {}",
                         self.server.user(&user_key).address(),
                         new_message_contents
                     );
@@ -107,7 +107,7 @@ impl App {
                 self.tick_count = self.tick_count.wrapping_add(1);
             }
             for error in events.read::<ErrorEvent>() {
-                info!("Server A Error: {}", error);
+                info!("Server B Error: {}", error);
             }
         }
     }
