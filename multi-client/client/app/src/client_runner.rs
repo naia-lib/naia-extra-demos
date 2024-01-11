@@ -48,6 +48,10 @@ impl<T: IsStringMessage> ClientRunner<T> {
         }
     }
 
+    pub fn message_count(&self) -> u32 {
+        self.message_count
+    }
+
     pub fn update(&mut self, world: &mut World) {
         if self.client.is_disconnected() {
             return;
