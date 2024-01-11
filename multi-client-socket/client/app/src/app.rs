@@ -12,8 +12,8 @@ use naia_client_socket::{PacketReceiver, PacketSender, ServerAddr, Socket};
 
 use naia_shared::Timer;
 
-use multi_client_socket_shared_a::{shared_config_a, PING_MSG_A, PONG_MSG_A};
-use multi_client_socket_shared_b::{shared_config_b, PING_MSG_B, PONG_MSG_B};
+use multi_client_socket_server_a_protocol::{shared_config_a, PING_MSG_A, PONG_MSG_A};
+use multi_client_socket_server_b_protocol::{shared_config_b, PING_MSG_B, PONG_MSG_B};
 
 pub struct App {
     packet_sender_a: Box<dyn PacketSender>,

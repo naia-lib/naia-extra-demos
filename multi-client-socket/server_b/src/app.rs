@@ -2,7 +2,7 @@ use std::{thread::sleep, time::Duration};
 
 use naia_server_socket::{PacketReceiver, PacketSender, ServerAddrs, Socket};
 
-use multi_client_socket_shared_b::{shared_config_b, PING_MSG_B, PONG_MSG_B};
+use multi_client_socket_server_b_protocol::{shared_config_b, PING_MSG_B, PONG_MSG_B};
 
 pub struct App {
     packet_sender: Box<dyn PacketSender>,

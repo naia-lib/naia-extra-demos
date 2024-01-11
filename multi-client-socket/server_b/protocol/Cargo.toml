@@ -1,8 +1,8 @@
 [package]
-name = "multi-client-socket-shared-a"
+name = "multi-client-socket-server-b-protocol"
 version = "0.1.0"
 authors = ["connorcarpenter <connorcarpenter@gmail.com>"]
-workspace = "../.."
+workspace = "../../.."
 edition = "2021"
 license = "MIT OR Apache-2.0"
 publish = false
@@ -12,4 +12,4 @@ wbindgen = [ "naia-socket-shared/wbindgen" ]
 mquad = [ "naia-socket-shared/mquad" ]
 
 [dependencies]
-naia-socket-shared = { path = "../../../naia/socket/shared" }
+naia-socket-shared = { path = "../../../../naia/socket/shared" }

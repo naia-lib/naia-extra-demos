@@ -8,12 +8,12 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [features]
-mquad = [ "naia-client-socket/mquad", "multi-client-socket-shared-a/mquad", "naia-shared/mquad", "miniquad" ]
-wbindgen = [ "naia-client-socket/wbindgen", "multi-client-socket-shared-a/wbindgen", "naia-shared/wbindgen", "log" ]
+mquad = [ "naia-client-socket/mquad", "multi-client-socket-server-a-protocol/mquad", "naia-shared/mquad", "miniquad" ]
+wbindgen = [ "naia-client-socket/wbindgen", "multi-client-socket-server-a-protocol/wbindgen", "naia-shared/wbindgen", "log" ]
 
 [dependencies]
-multi-client-socket-shared-a = { path = "../../shared_a" }
-multi-client-socket-shared-b = { path = "../../shared_b" }
+multi-client-socket-server-a-protocol = { path = "../../server_a/protocol" }
+multi-client-socket-server-b-protocol = { path = "../../server_b/protocol" }
 
 naia-client-socket = { path = "../../../../naia/socket/client" }
 naia-shared = { path = "../../../../naia/shared" }
