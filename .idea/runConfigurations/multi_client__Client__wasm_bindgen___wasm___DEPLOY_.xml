@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="multi-client-socket: Client [wasm-bindgen] [linux] [RUN]" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-    <option name="command" value="run" />
-    <option name="workingDirectory" value="file://$PROJECT_DIR$/multi-client-socket/client/wasm_bindgen" />
+  <configuration default="false" name="multi-client: Client [wasm-bindgen] [wasm] [DEPLOY]" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+    <option name="command" value="make serve" />
+    <option name="workingDirectory" value="file://$PROJECT_DIR$/multi-client/client/wasm_bindgen" />
     <option name="emulateTerminal" value="true" />
     <option name="channel" value="DEFAULT" />
     <option name="requiredFeatures" value="false" />
