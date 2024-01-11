@@ -8,7 +8,7 @@ use naia_server::{
 
 use naia_demo_world::{Entity, World, WorldRefType};
 
-use naia_basic_demo_shared::{protocol, Auth, Character, StringMessage};
+use multi_client_server_a_protocol::{protocol, Auth, Character, StringMessage};
 
 type Server = NaiaServer<Entity>;
 

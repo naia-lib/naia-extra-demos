@@ -1,8 +1,8 @@
 [package]
-name = "multi-client-shared-a"
+name = "multi-client-server-a-protocol"
 version = "0.1.0"
 authors = ["connorcarpenter <connorcarpenter@gmail.com>"]
-workspace = "../.."
+workspace = "../../.."
 edition = "2021"
 license = "MIT OR Apache-2.0"
 publish = false
@@ -12,6 +12,6 @@ wbindgen = [ "naia-shared/wbindgen" ]
 mquad = [ "naia-shared/mquad" ]
 
 [dependencies]
-naia-shared = { path = "../../../naia/shared" }
+naia-shared = { path = "../../../../naia/shared" }
 cfg-if = { version = "1.0" }
 log = { version = "0.4" }

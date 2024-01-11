@@ -8,7 +8,7 @@ cfg_if! {
 
         mod app_loop;
 
-        use naia_basic_client_demo_app::App;
+        use multi_client_client_app::App;
 
         use app_loop::start_loop;
 

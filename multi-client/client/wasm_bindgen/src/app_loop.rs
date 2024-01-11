@@ -1,4 +1,4 @@
-use naia_basic_client_demo_app::App;
+use multi_client_client_app::App;
 
 cfg_if! {
     if #[cfg(target_arch = "wasm32")] {

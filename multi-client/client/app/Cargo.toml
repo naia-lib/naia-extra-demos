@@ -8,13 +8,13 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [features]
-mquad = [ "naia-client/mquad", "multi-client-shared-a/mquad", "miniquad" ]
-wbindgen = [ "naia-client/wbindgen", "multi-client-shared-a/wbindgen", "log" ]
+mquad = [ "naia-client/mquad", "multi-client-server-a-protocol/mquad", "miniquad" ]
+wbindgen = [ "naia-client/wbindgen", "multi-client-server-a-protocol/wbindgen", "log" ]
 
 [dependencies]
 naia-client = { path = "../../../../naia/client", features = [ "transport_webrtc" ] }
 naia-demo-world = { path = "../../../../naia/demos/demo_utils/demo_world" }
-multi-client-shared-a = { path = "../../shared_a" }
+multi-client-server-a-protocol = { path = "../../server_a/protocol" }
 cfg-if = { version = "1.0" }
 log = { version = "0.4", optional = true }
 miniquad = { version = "0.3", features = ["log-impl"], optional = true }

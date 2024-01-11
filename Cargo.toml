@@ -14,7 +14,7 @@ members = [
     "multi-client/client/app",
     "multi-client/client/miniquad",
     "multi-client/client/wasm_bindgen",
-    "multi-client/shared_a",
+    "multi-client/server_a/protocol",
     "multi-client/server_a",
 ]
 

@@ -16,7 +16,7 @@ use naia_client::{
 
 use naia_demo_world::{Entity, World};
 
-use naia_basic_demo_shared::{protocol, Auth, Character, StringMessage};
+use multi_client_server_a_protocol::{protocol, Auth, Character, StringMessage};
 
 type Client = NaiaClient<Entity>;
 
