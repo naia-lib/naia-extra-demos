@@ -6,135 +6,74 @@ cfg_if! {
     }
 }
 
-use naia_client::{
-    shared::default_channels::UnorderedReliableChannel,
-    transport::webrtc,
-    Client as NaiaClient, ClientConfig, ConnectEvent,
-    DisconnectEvent, ErrorEvent, MessageEvent,
-};
+use naia_client::transport::webrtc;
 
-use naia_demo_world::{Entity, World};
+use naia_demo_world::World;
 
 use multi_client_server_a_protocol::{protocol as protocol_a, Auth as AuthA, StringMessage as StringMessageA};
 use multi_client_server_b_protocol::{protocol as protocol_b, Auth as AuthB, StringMessage as StringMessageB};
 
-type Client = NaiaClient<Entity>;
+use crate::client_runner::{IsStringMessage, ClientRunner};
+
+impl IsStringMessage for StringMessageA {
+    fn new(contents: String) -> Self {
+        Self::new(contents)
+    }
+    fn contents(&self) -> &String {
+        &self.contents
+    }
+}
+
+impl IsStringMessage for StringMessageB {
+    fn new(contents: String) -> Self {
+        Self::new(contents)
+    }
+    fn contents(&self) -> &String {
+        &self.contents
+    }
+}
 
 pub struct App {
     world: World,
 
-    client_a: Client,
-    message_count_a: u32,
-
-    client_b: Client,
-    message_count_b: u32,
+    client_runner_a: ClientRunner<StringMessageA>,
+    client_runner_b: ClientRunner<StringMessageB>,
 }
 
 impl App {
     pub fn default() -> Self {
         info!("Multi-Client Demo Client started");
 
-        // Client A
-        let client_a = {
+        // Client Runner A
+        let client_runner_a = {
             let protocol = protocol_a();
             let socket_config = protocol.socket.clone();
             let socket = webrtc::Socket::new("http://127.0.0.1:14191", &socket_config);
-            let mut client = Client::new(ClientConfig::default(), protocol);
 
             let auth = AuthA::new("charlie", "12345");
-            client.auth(auth);
 
-            client.connect(socket);
-            client
+            ClientRunner::<StringMessageA>::new("A".to_string(), socket, auth, protocol)
         };
 
-        // Client B
-        let client_b = {
+        // Client Runner B
+        let client_runner_b = {
             let protocol = protocol_b();
             let socket_config = protocol.socket.clone();
             let socket = webrtc::Socket::new("http://127.0.0.1:14193", &socket_config);
-            let mut client = Client::new(ClientConfig::default(), protocol);
-
             let auth = AuthB::new("charlie", "12345");
-            client.auth(auth);
 
-            client.connect(socket);
-            client
+            ClientRunner::<StringMessageB>::new("B".to_string(), socket, auth, protocol)
         };
 
         App {
             world: World::default(),
-            client_a,
-            message_count_a: 0,
-            client_b,
-            message_count_b: 0,
+            client_runner_a,
+            client_runner_b,
         }
     }
 
     pub fn update(&mut self) {
-        self.update_a();
-        self.update_b();
-    }
-
-    fn update_a(&mut self) {
-        if self.client_a.is_disconnected() {
-            return;
-        }
-
-        let mut events = self.client_a.receive(self.world.proxy_mut());
-
-        for server_address in events.read::<ConnectEvent>() {
-            info!("Client A connected to: {}", server_address);
-        }
-        for server_address in events.read::<DisconnectEvent>() {
-            info!("Client A disconnected from: {}", server_address);
-        }
-        for message in events.read::<MessageEvent<UnorderedReliableChannel, StringMessageA>>() {
-            let message_contents = &(*message.contents);
-            info!("Client A recv <- {}", message_contents);
-
-            let new_message_contents = format!("Client A Message ({})", self.message_count_a);
-            info!("Client A send -> {}", new_message_contents);
-
-            let string_message = StringMessageA::new(new_message_contents);
-            self.client_a.send_message::<UnorderedReliableChannel, StringMessageA>(&string_message);
-
-            self.message_count_a += 1;
-        }
-        for error in events.read::<ErrorEvent>() {
-            info!("Client A Error: {}", error);
-            return;
-        }
-    }
-
-    fn update_b(&mut self) {
-        if self.client_b.is_disconnected() {
-            return;
-        }
-
-        let mut events = self.client_b.receive(self.world.proxy_mut());
-
-        for server_address in events.read::<ConnectEvent>() {
-            info!("Client B connected to: {}", server_address);
-        }
-        for server_address in events.read::<DisconnectEvent>() {
-            info!("Client B disconnected from: {}", server_address);
-        }
-        for message in events.read::<MessageEvent<UnorderedReliableChannel, StringMessageB>>() {
-            let message_contents = &(*message.contents);
-            info!("Client B recv <- {}", message_contents);
-
-            let new_message_contents = format!("Client B Message ({})", self.message_count_b);
-            info!("Client B send -> {}", new_message_contents);
-
-            let string_message = StringMessageB::new(new_message_contents);
-            self.client_b.send_message::<UnorderedReliableChannel, StringMessageB>(&string_message);
-
-            self.message_count_b += 1;
-        }
-        for error in events.read::<ErrorEvent>() {
-            info!("Client B Error: {}", error);
-            return;
-        }
+        self.client_runner_a.update(&mut self.world);
+        self.client_runner_b.update(&mut self.world);
     }
 }

@@ -18,6 +18,8 @@ members = [
     "multi-client/server_a",
     "multi-client/server_b/protocol",
     "multi-client/server_b",
+    "multi-client/server_c/protocol",
+    "multi-client/server_c",
 ]
 
 [profile.release]
