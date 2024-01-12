@@ -61,7 +61,7 @@ impl<T: IsStringMessage> ClientRunner<T> {
     }
 
     pub fn update(&mut self, world: &mut World) {
-        if self.client.is_disconnected() {
+        if !self.client.connection_status().is_connected() {
             return;
         }
 
@@ -92,11 +92,11 @@ impl<T: IsStringMessage> ClientRunner<T> {
     }
 
     pub fn is_connected(&self) -> bool {
-        self.client.is_connected()
+        self.client.connection_status().is_connected()
     }
 
     pub fn is_disconnected(&self) -> bool {
-        self.client.is_disconnected()
+        self.client.connection_status().is_disconnected()
     }
 
     pub fn disconnect(&mut self) {
