@@ -8,15 +8,14 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [features]
-mquad = [ "naia-client/mquad", "multi-client-server-a-protocol/mquad", "multi-client-server-b-protocol/mquad", "multi-client-server-c-protocol/mquad", "miniquad" ]
-wbindgen = [ "naia-client/wbindgen", "multi-client-server-a-protocol/wbindgen", "multi-client-server-b-protocol/wbindgen", "multi-client-server-c-protocol/wbindgen", "log" ]
+mquad = [ "naia-client/mquad", "multi-client-server-a-protocol/mquad", "multi-client-server-b-protocol/mquad", "miniquad" ]
+wbindgen = [ "naia-client/wbindgen", "multi-client-server-a-protocol/wbindgen", "multi-client-server-b-protocol/wbindgen", "log" ]
 
 [dependencies]
 naia-client = { path = "../../../../naia/client", features = [ "transport_webrtc" ] }
 naia-demo-world = { path = "../../../../naia/demos/demo_utils/demo_world" }
 multi-client-server-a-protocol = { path = "../../server_a/protocol" }
 multi-client-server-b-protocol = { path = "../../server_b/protocol" }
-multi-client-server-c-protocol = { path = "../../server_c/protocol" }
 cfg-if = { version = "1.0" }
 log = { version = "0.4", optional = true }
 miniquad = { version = "0.3", features = ["log-impl"], optional = true }

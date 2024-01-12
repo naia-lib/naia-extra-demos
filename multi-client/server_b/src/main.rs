@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate cfg_if;
+
 use log::LevelFilter;
 use simple_logger::SimpleLogger;
 use smol::io;

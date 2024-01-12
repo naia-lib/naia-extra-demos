@@ -1,3 +1,21 @@
+
+cfg_if! {
+    if #[cfg(not(feature = "alternate"))]
+    {
+        const SERVER_LETTER: &str = "B";
+        const SIGNAL_ADDR: &str = "127.0.0.1:14193";
+        const WEBRTC_ADDR: &str = "127.0.0.1:14194";
+        const WEBRTC_URL: &str = "http://127.0.0.1:14194";
+    }
+    else
+    {
+        const SERVER_LETTER: &str = "C";
+        const SIGNAL_ADDR: &str = "127.0.0.1:14195";
+        const WEBRTC_ADDR: &str = "127.0.0.1:14196";
+        const WEBRTC_URL: &str = "http://127.0.0.1:14196";
+    }
+}
+
 use std::{thread::sleep, time::Duration};
 
 use naia_server::{
@@ -20,20 +38,20 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        info!("Multi-Client Server B started");
+        info!("Multi-Client Server {} started", SERVER_LETTER);
 
         let world = World::default();
 
         let server_addresses = webrtc::ServerAddrs::new(
-            "127.0.0.1:14193"
+            SIGNAL_ADDR
                 .parse()
                 .expect("could not parse Signaling address/port"),
             // IP Address to listen on for UDP WebRTC data channels
-            "127.0.0.1:14194"
+            WEBRTC_ADDR
                 .parse()
                 .expect("could not parse WebRTC data address/port"),
             // The public WebRTC IP address to advertise
-            "http://127.0.0.1:14194",
+            WEBRTC_URL,
         );
         let protocol = protocol();
         let socket = webrtc::Socket::new(&server_addresses, &protocol.socket);
@@ -65,19 +83,21 @@ impl App {
             }
             for user_key in events.read::<ConnectEvent>() {
                 info!(
-                    "Server B connected to: {}",
+                    "Server {} connected to: {}",
+                    SERVER_LETTER,
                     self.server.user(&user_key).address()
                 );
             }
             for (_user_key, user) in events.read::<DisconnectEvent>() {
-                info!("Server B disconnected from: {:?}", user.address);
+                info!("Server {} disconnected from: {:?}", SERVER_LETTER, user.address);
             }
             for (user_key, message) in
                 events.read::<MessageEvent<UnorderedReliableChannel, StringMessage>>()
             {
                 let message_contents = &(*message.contents);
                 info!(
-                    "Server B recv from ({}) <- {}",
+                    "Server {} recv from ({}) <- {}",
+                    SERVER_LETTER,
                     self.server.user(&user_key).address(),
                     message_contents
                 );
@@ -87,9 +107,10 @@ impl App {
 
                 // Message sending
                 for user_key in self.server.user_keys() {
-                    let new_message_contents = format!("Server B Message ({})", self.tick_count);
+                    let new_message_contents = format!("Server {} Message ({})", SERVER_LETTER, self.tick_count);
                     info!(
-                        "Server B send to   ({}) -> {}",
+                        "Server {} send to   ({}) -> {}",
+                        SERVER_LETTER,
                         self.server.user(&user_key).address(),
                         new_message_contents
                     );
@@ -107,7 +128,7 @@ impl App {
                 self.tick_count = self.tick_count.wrapping_add(1);
             }
             for error in events.read::<ErrorEvent>() {
-                info!("Server B Error: {}", error);
+                info!("Server {} Error: {}", SERVER_LETTER, error);
             }
         }
     }

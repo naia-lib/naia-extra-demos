@@ -7,6 +7,9 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 publish = false
 
+[features]
+alternate = []
+
 [dependencies]
 naia-server = { path = "../../../naia/server", features = [ "transport_webrtc" ] }
 naia-demo-world = { path = "../../../naia/demos/demo_utils/demo_world" }
@@ -14,3 +17,4 @@ multi-client-server-b-protocol = { path = "protocol" }
 log = { version = "0.4" }
 simple_logger = { version = "4.0", default-features = false, features = ["timestamps"] }
 smol = { version = "1.3" }
+cfg-if = { version = "1.0" }
