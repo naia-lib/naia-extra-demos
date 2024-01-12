@@ -16,6 +16,8 @@ use naia_client::{
     transport::webrtc::Socket,
 };
 
+use multi_client_server_b_protocol::{protocol as protocol_b, Auth as AuthB};
+
 use naia_demo_world::{Entity, World};
 
 type Client = NaiaClient<Entity>;
@@ -29,6 +31,7 @@ pub struct ClientRunner<T: IsStringMessage> {
     letter: String,
     client: Client,
     message_count: u32,
+    disconnected_count: u32,
     phantom_t: PhantomData<T>,
 }
 
@@ -44,8 +47,13 @@ impl<T: IsStringMessage> ClientRunner<T> {
             letter,
             client,
             message_count: 0,
+            disconnected_count: 0,
             phantom_t: PhantomData,
         }
+    }
+
+    pub fn letter(&self) -> String {
+        self.letter.clone()
     }
 
     pub fn message_count(&self) -> u32 {
@@ -81,5 +89,53 @@ impl<T: IsStringMessage> ClientRunner<T> {
             info!("Client {} Error: {}", self.letter, error);
             return;
         }
+    }
+
+    pub fn is_connected(&self) -> bool {
+        self.client.is_connected()
+    }
+
+    pub fn is_disconnected(&self) -> bool {
+        self.client.is_disconnected()
+    }
+
+    pub fn disconnect(&mut self) {
+        self.client.disconnect();
+    }
+
+    pub fn disconnect_count(&self) -> u32 {
+        self.disconnected_count
+    }
+
+    pub fn increment_disconnect_count(&mut self) {
+        self.disconnected_count += 1;
+    }
+
+    pub fn connect_to_server_b(&mut self) {
+        self.letter = "B".to_string();
+        self.message_count = 0;
+        self.disconnected_count = 0;
+
+        let protocol = protocol_b();
+        let socket_config = protocol.socket.clone();
+        let socket = Socket::new("http://127.0.0.1:14193", &socket_config);
+        let auth = AuthB::new("charlie", "12345");
+
+        self.client.auth(auth);
+        self.client.connect(socket);
+    }
+
+    pub fn connect_to_server_c(&mut self) {
+        self.letter = "C".to_string();
+        self.message_count = 0;
+        self.disconnected_count = 0;
+
+        let protocol = protocol_b();
+        let socket_config = protocol.socket.clone();
+        let socket = Socket::new("http://127.0.0.1:14195", &socket_config);
+        let auth = AuthB::new("charlie", "12345");
+
+        self.client.auth(auth);
+        self.client.connect(socket);
     }
 }
