@@ -59,7 +59,7 @@ impl<T: IsStringMessage> ClientRunner<T> {
     }
 
     pub fn update(&mut self, world: &mut World) {
-        if !self.client.connection_status().is_connected() {
+        if self.client.connection_status().is_disconnected() {
             return;
         }
 

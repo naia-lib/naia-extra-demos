@@ -78,26 +78,19 @@ impl App {
                 self.client_runner_b.disconnect();
             } else {
                 if self.client_runner_b.is_disconnected() {
-                    if self.client_runner_b.disconnect_count() > 1000 {
-                        let letter = self.client_runner_b.letter();
-                        match letter.as_str() {
-                            "B" => {
-                                info!("-----   Starting Client C.  -----");
-                                self.client_runner_b.connect_to_server_c();
-                            }
-                            "C" => {
-                                info!("-----   Starting Client B.  -----");
-                                self.client_runner_b.connect_to_server_b();
-                            }
-                            _ => {
-                                panic!("Unknown letter: {}", letter);
-                            }
+                    let letter = self.client_runner_b.letter();
+                    match letter.as_str() {
+                        "B" => {
+                            info!("-----   Starting Client C.  -----");
+                            self.client_runner_b.connect_to_server_c();
                         }
-                    } else {
-                        self.client_runner_b.increment_disconnect_count();
-                        // if self.client_runner_b.disconnect_count() % 100 == 0 {
-                        //     info!(".");
-                        // }
+                        "C" => {
+                            info!("-----   Starting Client B.  -----");
+                            self.client_runner_b.connect_to_server_b();
+                        }
+                        _ => {
+                            panic!("Unknown letter: {}", letter);
+                        }
                     }
                 } else {
                     info!(".not disconnected yet.");
