@@ -18,6 +18,11 @@ members = [
     "multi-client/server_a",
     "multi-client/server_b/protocol",
     "multi-client/server_b",
+    "bevy-multi-client/client",
+    "bevy-multi-client/server_a",
+    "bevy-multi-client/server_a/protocol",
+    "bevy-multi-client/server_b",
+    "bevy-multi-client/server_b/protocol",
 ]
 
 [profile.release]

@@ -1,0 +1,30 @@
+[package]
+name = "bevy-multi-client-client"
+version = "0.1.0"
+authors = ["connorcarpenter <connorcarpenter@gmail.com>"]
+workspace = "../.."
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[[bin]]
+name = "app"
+path = "src/main.rs"
+
+[lib]
+name = "app"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+
+[dependencies]
+naia-bevy-client = { path = "../../../naia/adapters/bevy/client", features = ["transport_webrtc"] }
+bevy-multi-client-server-a-protocol = { path = "../server_a/protocol" }
+
+bevy = { version = "0.12.1", default_features = false, features = [ "bevy_asset", "bevy_winit", "bevy_core_pipeline", "bevy_render", "bevy_sprite", "x11", "webgl2"] }
+
+cfg-if = { version = "1.0" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { version = "0.2.84", features = [ "serde-serialize" ] }

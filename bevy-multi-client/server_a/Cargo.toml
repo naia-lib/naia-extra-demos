@@ -1,0 +1,16 @@
+[package]
+name = "bevy-multi-client-server-a"
+version = "0.1.0"
+authors = ["connorcarpenter <connorcarpenter@gmail.com>"]
+workspace = "../.."
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+bevy-multi-client-server-a-protocol = { path = "protocol" }
+naia-bevy-server = { path = "../../../naia/adapters/bevy/server", features = [ "transport_webrtc" ] }
+bevy_app = { version = "0.12.1", default-features=false }
+bevy_core = { version = "0.12.1", default-features=false }
+bevy_ecs = { version = "0.12.1", default-features=false }
+bevy_log = { version = "0.12.1", default-features=false }

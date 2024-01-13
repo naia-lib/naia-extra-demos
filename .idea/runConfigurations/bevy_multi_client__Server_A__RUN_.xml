@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="multi-client: Client [wasm-bindgen] [linux] [RUN]" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <configuration default="false" name="bevy-multi-client: Server A [RUN]" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="command" value="run" />
-    <option name="workingDirectory" value="file://$PROJECT_DIR$/multi-client/client/wasm_bindgen" />
+    <option name="workingDirectory" value="file://$PROJECT_DIR$/bevy-multi-client/server_a" />
     <envs />
     <option name="emulateTerminal" value="true" />
     <option name="channel" value="DEFAULT" />
