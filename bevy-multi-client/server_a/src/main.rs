@@ -5,16 +5,17 @@ use bevy_core::{FrameCountPlugin, TaskPoolPlugin, TypeRegistrationPlugin};
 use bevy_ecs::schedule::IntoSystemConfigs;
 use bevy_log::{info, LogPlugin};
 
-use bevy_multi_client_server_a_protocol::protocol;
 use naia_bevy_server::{Plugin as ServerPlugin, ReceiveEvents, ServerConfig};
 
-mod resources;
 mod systems;
-
 use systems::{events, init};
 
+use bevy_multi_client_server_a_protocol::protocol;
+
+pub const LETTER: &str = "A";
+
 fn main() {
-    info!("Naia Bevy Server Demo starting up");
+    info!("Bevy Multi-Client Demo Server {} Demo starting up", LETTER);
 
     let mut server_config = ServerConfig::default();
     server_config.connection.disconnection_timeout_duration = Duration::from_secs(10);
@@ -40,13 +41,7 @@ fn main() {
                 events::disconnect_events,
                 events::error_events,
                 events::tick_events,
-                events::spawn_entity_events,
-                events::despawn_entity_events,
-                events::publish_entity_events,
-                events::unpublish_entity_events,
-                events::insert_component_events,
-                events::update_component_events,
-                events::remove_component_events,
+                events::message_events,
             )
                 .chain()
                 .in_set(ReceiveEvents),

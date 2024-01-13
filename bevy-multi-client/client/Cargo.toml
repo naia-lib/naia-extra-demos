@@ -19,8 +19,9 @@ crate-type = ["cdylib", "rlib"]
 [features]
 
 [dependencies]
-naia-bevy-client = { path = "../../../naia/adapters/bevy/client", features = ["transport_webrtc"] }
 bevy-multi-client-server-a-protocol = { path = "../server_a/protocol" }
+
+naia-bevy-client = { path = "../../../naia/adapters/bevy/client", features = ["transport_webrtc"] }
 
 bevy = { version = "0.12.1", default_features = false, features = [ "bevy_asset", "bevy_winit", "bevy_core_pipeline", "bevy_render", "bevy_sprite", "x11", "webgl2"] }
 

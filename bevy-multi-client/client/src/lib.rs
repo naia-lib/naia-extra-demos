@@ -7,7 +7,6 @@ cfg_if! {
         mod resources;
         mod systems;
         mod app;
-        mod components;
 
         use wasm_bindgen::prelude::*;
 

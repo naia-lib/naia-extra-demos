@@ -7,7 +7,6 @@ cfg_if! {
         mod resources;
         mod systems;
         mod app;
-        mod components;
 
         fn main() {
             app::run();
