@@ -32,7 +32,6 @@ pub struct ClientRunner<T: IsStringMessage> {
     letter: String,
     client: Client,
     message_count: u32,
-    disconnected_count: u32,
     phantom_t: PhantomData<T>,
 }
 
@@ -45,7 +44,6 @@ impl<T: IsStringMessage> ClientRunner<T> {
             letter,
             client,
             message_count: 0,
-            disconnected_count: 0,
             phantom_t: PhantomData,
         }
     }
@@ -98,21 +96,19 @@ impl<T: IsStringMessage> ClientRunner<T> {
     }
 
     pub fn disconnect(&mut self) {
+
+        info!("-----   Closing Client {}.   -----", self.letter);
+
         self.client.disconnect();
-    }
-
-    pub fn disconnect_count(&self) -> u32 {
-        self.disconnected_count
-    }
-
-    pub fn increment_disconnect_count(&mut self) {
-        self.disconnected_count += 1;
+        self.message_count = 0;
     }
 
     pub fn connect_to_server_a(&mut self) {
         self.letter = "A".to_string();
+
+        info!("-----   Starting Client {}.  -----", self.letter);
+
         self.message_count = 0;
-        self.disconnected_count = 0;
 
         let protocol = protocol_a();
         let socket_config = protocol.socket.clone();
@@ -125,8 +121,10 @@ impl<T: IsStringMessage> ClientRunner<T> {
 
     pub fn connect_to_server_b(&mut self) {
         self.letter = "B".to_string();
+
+        info!("-----   Starting Client {}.  -----", self.letter);
+
         self.message_count = 0;
-        self.disconnected_count = 0;
 
         let protocol = protocol_b();
         let socket_config = protocol.socket.clone();
@@ -138,9 +136,12 @@ impl<T: IsStringMessage> ClientRunner<T> {
     }
 
     pub fn connect_to_server_c(&mut self) {
+
         self.letter = "C".to_string();
+
+        info!("-----   Starting Client {}.  -----", self.letter);
+
         self.message_count = 0;
-        self.disconnected_count = 0;
 
         let protocol = protocol_b();
         let socket_config = protocol.socket.clone();
