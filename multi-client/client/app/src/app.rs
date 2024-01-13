@@ -6,12 +6,10 @@ cfg_if! {
     }
 }
 
-use naia_client::transport::webrtc;
-
 use naia_demo_world::World;
 
-use multi_client_server_a_protocol::{protocol as protocol_a, Auth as AuthA, StringMessage as StringMessageA};
-use multi_client_server_b_protocol::{protocol as protocol_b, Auth as AuthB, StringMessage as StringMessageB};
+use multi_client_server_a_protocol::{protocol as protocol_a, StringMessage as StringMessageA};
+use multi_client_server_b_protocol::{protocol as protocol_b, StringMessage as StringMessageB};
 
 use crate::client_runner::{IsStringMessage, ClientRunner};
 
@@ -47,22 +45,19 @@ impl App {
         // Client Runner A
         let client_runner_a = {
             let protocol = protocol_a();
-            let socket_config = protocol.socket.clone();
-            let socket = webrtc::Socket::new("http://127.0.0.1:14191", &socket_config);
+            let mut client_runner = ClientRunner::<StringMessageA>::new("A".to_string(), protocol);
+            client_runner.connect_to_server_a();
 
-            let auth = AuthA::new("charlie", "12345");
-
-            ClientRunner::<StringMessageA>::new("A".to_string(), socket, auth, protocol)
+            client_runner
         };
 
         // Client Runner B
         let client_runner_b = {
             let protocol = protocol_b();
-            let socket_config = protocol.socket.clone();
-            let socket = webrtc::Socket::new("http://127.0.0.1:14193", &socket_config);
-            let auth = AuthB::new("charlie", "12345");
+            let mut client_runner = ClientRunner::<StringMessageB>::new("B".to_string(), protocol);
+            client_runner.connect_to_server_b();
 
-            ClientRunner::<StringMessageB>::new("B".to_string(), socket, auth, protocol)
+            client_runner
         };
 
         App {

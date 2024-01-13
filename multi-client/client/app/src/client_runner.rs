@@ -16,6 +16,7 @@ use naia_client::{
     transport::webrtc::Socket,
 };
 
+use multi_client_server_a_protocol::{protocol as protocol_a, Auth as AuthA};
 use multi_client_server_b_protocol::{protocol as protocol_b, Auth as AuthB};
 
 use naia_demo_world::{Entity, World};
@@ -36,12 +37,9 @@ pub struct ClientRunner<T: IsStringMessage> {
 }
 
 impl<T: IsStringMessage> ClientRunner<T> {
-    pub fn new<M: Message>(letter: String, socket: Socket, auth: M, protocol: Protocol) -> Self {
+    pub fn new(letter: String, protocol: Protocol) -> Self {
 
         let mut client = Client::new(ClientConfig::default(), protocol);
-
-        client.auth(auth);
-        client.connect(socket);
 
         Self {
             letter,
@@ -109,6 +107,20 @@ impl<T: IsStringMessage> ClientRunner<T> {
 
     pub fn increment_disconnect_count(&mut self) {
         self.disconnected_count += 1;
+    }
+
+    pub fn connect_to_server_a(&mut self) {
+        self.letter = "A".to_string();
+        self.message_count = 0;
+        self.disconnected_count = 0;
+
+        let protocol = protocol_a();
+        let socket_config = protocol.socket.clone();
+        let socket = Socket::new("http://127.0.0.1:14191", &socket_config);
+        let auth = AuthA::new("charlie", "12345");
+
+        self.client.auth(auth);
+        self.client.connect(socket);
     }
 
     pub fn connect_to_server_b(&mut self) {
