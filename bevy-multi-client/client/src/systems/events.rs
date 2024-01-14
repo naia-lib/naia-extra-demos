@@ -1,5 +1,5 @@
 
-use bevy::prelude::{info, EventReader, ResMut};
+use bevy::prelude::{info, EventReader, Local};
 
 use naia_bevy_client::{
     default_channels::UnorderedReliableChannel,
@@ -7,9 +7,10 @@ use naia_bevy_client::{
     Client
 };
 
-use bevy_multi_client_server_a_protocol::messages::StringMessage;
+use bevy_multi_client_server_a_protocol::messages::{StringMessage as StringMessageA};
+use bevy_multi_client_server_b_protocol::messages::{StringMessage as StringMessageB};
 
-use crate::{app::ClientName, resources::Global};
+use crate::app::{ClientName, Alt, Main};
 
 pub fn connect_events<T: ClientName>(
     client: Client<T>,
@@ -35,23 +36,44 @@ pub fn disconnect_events<T: ClientName>(mut event_reader: EventReader<Disconnect
     }
 }
 
-pub fn message_events<T: ClientName>(
-    mut client: Client<T>,
-    mut event_reader: EventReader<MessageEvents<T>>,
-    mut global: ResMut<Global>,
+pub fn message_events_main(
+    mut client: Client<Main>,
+    mut event_reader: EventReader<MessageEvents<Main>>,
+    mut message_count: Local<u32>,
 ) {
     for events in event_reader.read() {
-        for message in events.read::<UnorderedReliableChannel, StringMessage>() {
+        for message in events.read::<UnorderedReliableChannel, StringMessageA>() {
             let message_contents = message.contents;
-            info!("Client<{}> recv <- {}", T::name(), message_contents);
+            info!("Client<{}> recv <- {}", Main::name(), message_contents);
 
-            let new_message_contents = format!("Client<{}> Message ({})", T::name(), global.message_count);
-            info!("Client<{}> send -> {}", T::name(), new_message_contents);
+            let new_message_contents = format!("Client<{}> Message ({})", Main::name(), *message_count);
+            info!("Client<{}> send -> {}", Main::name(), new_message_contents);
 
-            let string_message = StringMessage::new(new_message_contents);
-            client.send_message::<UnorderedReliableChannel, StringMessage>(&string_message);
+            let string_message = StringMessageA::new(new_message_contents);
+            client.send_message::<UnorderedReliableChannel, StringMessageA>(&string_message);
 
-            global.message_count += 1;
+            *message_count += 1;
+        }
+    }
+}
+
+pub fn message_events_alt(
+    mut client: Client<Alt>,
+    mut event_reader: EventReader<MessageEvents<Alt>>,
+    mut message_count: Local<u32>,
+) {
+    for events in event_reader.read() {
+        for message in events.read::<UnorderedReliableChannel, StringMessageB>() {
+            let message_contents = message.contents;
+            info!("Client<{}> recv <- {}", Alt::name(), message_contents);
+
+            let new_message_contents = format!("Client<{}> Message ({})", Alt::name(), *message_count);
+            info!("Client<{}> send -> {}", Alt::name(), new_message_contents);
+
+            let string_message = StringMessageB::new(new_message_contents);
+            client.send_message::<UnorderedReliableChannel, StringMessageB>(&string_message);
+
+            *message_count += 1;
         }
     }
 }

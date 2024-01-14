@@ -7,12 +7,14 @@ use bevy::{
 
 use naia_bevy_client::{ClientConfig, Plugin as ClientPlugin, ReceiveEvents};
 
-use bevy_multi_client_server_a_protocol::protocol;
+use bevy_multi_client_server_a_protocol::{protocol as protocolA};
+use bevy_multi_client_server_b_protocol::{protocol as protocolB};
 
 use crate::systems::{events, init};
 
 // Marker for the main client
 pub struct Main;
+pub struct Alt;
 
 pub trait ClientName: Send + Sync + 'static {
     fn name() -> &'static str;
@@ -24,12 +26,19 @@ impl ClientName for Main {
     }
 }
 
+impl ClientName for Alt {
+    fn name() -> &'static str {
+        "Alt"
+    }
+}
+
 pub fn run() {
     App::default()
         // Bevy Plugins
         .add_plugins(DefaultPlugins)
-        // Add Naia Client Plugin
-        .add_plugins(ClientPlugin::<Main>::new(ClientConfig::default(), protocol()))
+        // Add Client Plugins
+        .add_plugins(ClientPlugin::<Main>::new(ClientConfig::default(), protocolA()))
+        .add_plugins(ClientPlugin::<Alt>::new(ClientConfig::default(), protocolB()))
         // Background Color
         .insert_resource(ClearColor(Color::BLACK))
         // Startup System
@@ -41,7 +50,12 @@ pub fn run() {
                 events::connect_events::<Main>,
                 events::disconnect_events::<Main>,
                 events::reject_events::<Main>,
-                events::message_events::<Main>,
+                events::message_events_main,
+
+                events::connect_events::<Alt>,
+                events::disconnect_events::<Alt>,
+                events::reject_events::<Alt>,
+                events::message_events_alt,
             )
                 .chain()
                 .in_set(ReceiveEvents),

@@ -20,6 +20,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 bevy-multi-client-server-a-protocol = { path = "../server_a/protocol" }
+bevy-multi-client-server-b-protocol = { path = "../server_b/protocol" }
 
 naia-bevy-client = { path = "../../../naia/adapters/bevy/client", features = ["transport_webrtc"] }
 

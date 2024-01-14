@@ -73,16 +73,19 @@ pub fn tick_events(
     if has_ticked {
         // Send a message to all connected clients
 
-        let new_message_contents = format!("Server {} Message({})", LETTER, *tick_count);
+        for user_key in server.user_keys() {
+            let new_message_contents = format!("Server {} Message({})", LETTER, *tick_count);
 
-        info!(
-            "Server {} broadcast -> {}",
-            LETTER,
-            new_message_contents
-        );
+            info!(
+                "Server {} send to ({}) -> {}",
+                LETTER,
+                server.user(&user_key).address(),
+                new_message_contents
+            );
 
-        let new_message = StringMessage::new(new_message_contents);
-        server.broadcast_message::<UnorderedReliableChannel, StringMessage>(&new_message);
+            let new_message = StringMessage::new(new_message_contents);
+            server.send_message::<UnorderedReliableChannel, StringMessage>(&user_key, &new_message);
+        }
 
         *tick_count += 1;
     }

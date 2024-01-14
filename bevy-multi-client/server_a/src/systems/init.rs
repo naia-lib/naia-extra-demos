@@ -3,8 +3,10 @@ use bevy_log::info;
 
 use naia_bevy_server::{transport::webrtc, Server};
 
+use crate::LETTER;
+
 pub fn init(mut server: Server) {
-    info!("Bevy Multi-Client Server Demo is running");
+    info!("Bevy Multi-Client Demo Server {} is running", LETTER);
 
     // Naia Server initialization
     let server_addresses = webrtc::ServerAddrs::new(
