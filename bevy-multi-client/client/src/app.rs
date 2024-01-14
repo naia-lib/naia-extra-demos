@@ -11,12 +11,25 @@ use bevy_multi_client_server_a_protocol::protocol;
 
 use crate::systems::{events, init};
 
+// Marker for the main client
+pub struct Main;
+
+pub trait ClientName: Send + Sync + 'static {
+    fn name() -> &'static str;
+}
+
+impl ClientName for Main {
+    fn name() -> &'static str {
+        "Main"
+    }
+}
+
 pub fn run() {
     App::default()
         // Bevy Plugins
         .add_plugins(DefaultPlugins)
         // Add Naia Client Plugin
-        .add_plugins(ClientPlugin::new(ClientConfig::default(), protocol()))
+        .add_plugins(ClientPlugin::<Main>::new(ClientConfig::default(), protocol()))
         // Background Color
         .insert_resource(ClearColor(Color::BLACK))
         // Startup System
@@ -25,10 +38,10 @@ pub fn run() {
         .add_systems(
             Update,
             (
-                events::connect_events,
-                events::disconnect_events,
-                events::reject_events,
-                events::message_events,
+                events::connect_events::<Main>,
+                events::disconnect_events::<Main>,
+                events::reject_events::<Main>,
+                events::message_events::<Main>,
             )
                 .chain()
                 .in_set(ReceiveEvents),

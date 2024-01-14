@@ -6,11 +6,11 @@ use naia_bevy_client::{transport::webrtc, Client};
 
 use bevy_multi_client_server_a_protocol::messages::Auth;
 
-use crate::resources::Global;
+use crate::{app::Main, resources::Global};
 
 pub fn init(
     mut commands: Commands,
-    mut client: Client,
+    mut client: Client<Main>,
 ) {
     info!("Bevy Multi Client Demo Client started");
 
