@@ -19,16 +19,23 @@ pub trait ClientName: Send + Sync + 'static {
 
 pub struct Main;
 pub struct Alt;
+pub struct Alt2;
 
 impl ClientName for Main {
     fn name() -> &'static str {
-        "Main"
+        "A"
     }
 }
 
 impl ClientName for Alt {
     fn name() -> &'static str {
-        "Alt"
+        "B"
+    }
+}
+
+impl ClientName for Alt2 {
+    fn name() -> &'static str {
+        "C"
     }
 }
 
@@ -64,6 +71,7 @@ pub fn run() {
         // Add Client Plugins
         .add_plugins(ClientPlugin::<Main>::new(ClientConfig::default(), protocolA()))
         .add_plugins(ClientPlugin::<Alt>::new(ClientConfig::default(), protocolB()))
+        .add_plugins(ClientPlugin::<Alt2>::new(ClientConfig::default(), protocolB()))
         // Background Color
         .insert_resource(ClearColor(Color::BLACK))
         // Startup System
@@ -81,6 +89,11 @@ pub fn run() {
                 events::disconnect_events::<Alt>,
                 events::reject_events::<Alt>,
                 events::message_events::<Alt, StringMessageB>,
+
+                events::connect_events::<Alt2>,
+                events::disconnect_events::<Alt2>,
+                events::reject_events::<Alt2>,
+                events::message_events::<Alt2, StringMessageB>,
             )
                 .chain()
                 .in_set(ReceiveEvents),
