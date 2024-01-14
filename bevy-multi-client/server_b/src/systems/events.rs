@@ -15,7 +15,7 @@ use naia_bevy_server::{
 
 use bevy_multi_client_server_b_protocol::messages::{Auth, StringMessage};
 
-use crate::LETTER;
+use crate::SERVER_LETTER;
 
 pub fn auth_events(mut server: Server, mut event_reader: EventReader<AuthEvents>) {
     for events in event_reader.read() {
@@ -41,7 +41,7 @@ pub fn connect_events(
             // Get User's address for logging
             .address();
 
-        info!("Server {} connected to: {}", LETTER, address);
+        info!("Server {} connected to: {}", SERVER_LETTER, address);
     }
 }
 
@@ -49,13 +49,13 @@ pub fn disconnect_events(
     mut event_reader: EventReader<DisconnectEvent>,
 ) {
     for DisconnectEvent(_user_key, user) in event_reader.read() {
-        info!("Server {} disconnected from: {:?}", LETTER, user.address);
+        info!("Server {} disconnected from: {:?}", SERVER_LETTER, user.address);
     }
 }
 
 pub fn error_events(mut event_reader: EventReader<ErrorEvent>) {
     for ErrorEvent(error) in event_reader.read() {
-        info!("Server {} Error: {:?}", LETTER, error);
+        info!("Server {} Error: {:?}", SERVER_LETTER, error);
     }
 }
 
@@ -74,11 +74,11 @@ pub fn tick_events(
         // Send a message to all connected clients
 
         for user_key in server.user_keys() {
-            let new_message_contents = format!("Server {} Message({})", LETTER, *tick_count);
+            let new_message_contents = format!("Server {} Message({})", SERVER_LETTER, *tick_count);
 
             info!(
                 "Server {} send to ({}) -> {}",
-                LETTER,
+                SERVER_LETTER,
                 server.user(&user_key).address(),
                 new_message_contents
             );
@@ -97,7 +97,7 @@ pub fn message_events(
     for events in event_reader.read() {
         for (_user_key, message) in events.read::<UnorderedReliableChannel, StringMessage>() {
             let message_contents = message.contents;
-            info!("Server {} recv <- {}", LETTER, message_contents);
+            info!("Server {} recv <- {}", SERVER_LETTER, message_contents);
         }
     }
 }

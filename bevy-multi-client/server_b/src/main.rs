@@ -1,3 +1,24 @@
+
+#[macro_use]
+extern crate cfg_if;
+
+cfg_if! {
+    if #[cfg(not(feature = "alternate"))]
+    {
+        pub const SERVER_LETTER: &str = "B";
+        pub const SIGNAL_ADDR: &str = "127.0.0.1:14193";
+        pub const WEBRTC_ADDR: &str = "127.0.0.1:14194";
+        pub const WEBRTC_URL: &str = "http://127.0.0.1:14194";
+    }
+    else
+    {
+        pub const SERVER_LETTER: &str = "C";
+        pub const SIGNAL_ADDR: &str = "127.0.0.1:14195";
+        pub const WEBRTC_ADDR: &str = "127.0.0.1:14196";
+        pub const WEBRTC_URL: &str = "http://127.0.0.1:14196";
+    }
+}
+
 use std::time::Duration;
 
 use bevy_app::{App, ScheduleRunnerPlugin, Startup, Update};
@@ -12,10 +33,8 @@ use systems::{events, init};
 
 use bevy_multi_client_server_b_protocol::protocol;
 
-pub const LETTER: &str = "B";
-
 fn main() {
-    info!("Bevy Multi-Client Demo Server {} Demo starting up", LETTER);
+    info!("Bevy Multi-Client Demo Server {} Demo starting up", SERVER_LETTER);
 
     let mut server_config = ServerConfig::default();
     server_config.connection.disconnection_timeout_duration = Duration::from_secs(10);
