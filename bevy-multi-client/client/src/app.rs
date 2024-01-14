@@ -5,20 +5,20 @@ use bevy::{
     DefaultPlugins,
 };
 
-use naia_bevy_client::{ClientConfig, Plugin as ClientPlugin, ReceiveEvents};
+use naia_bevy_client::{ClientConfig, Plugin as ClientPlugin, ReceiveEvents, Message};
 
-use bevy_multi_client_server_a_protocol::{protocol as protocolA};
-use bevy_multi_client_server_b_protocol::{protocol as protocolB};
+use bevy_multi_client_server_a_protocol::{protocol as protocolA, messages::StringMessage as StringMessageA};
+use bevy_multi_client_server_b_protocol::{protocol as protocolB, messages::StringMessage as StringMessageB};
 
 use crate::systems::{events, init};
 
-// Marker for the main client
-pub struct Main;
-pub struct Alt;
-
+// ClientName
 pub trait ClientName: Send + Sync + 'static {
     fn name() -> &'static str;
 }
+
+pub struct Main;
+pub struct Alt;
 
 impl ClientName for Main {
     fn name() -> &'static str {
@@ -32,6 +32,31 @@ impl ClientName for Alt {
     }
 }
 
+// IsStringMessage
+pub trait IsStringMessage: Message {
+    fn new(contents: String) -> Self;
+    fn contents(&self) -> &String;
+}
+
+impl IsStringMessage for StringMessageA {
+    fn new(contents: String) -> Self {
+        Self::new(contents)
+    }
+    fn contents(&self) -> &String {
+        &self.contents
+    }
+}
+
+impl IsStringMessage for StringMessageB {
+    fn new(contents: String) -> Self {
+        Self::new(contents)
+    }
+    fn contents(&self) -> &String {
+        &self.contents
+    }
+}
+
+// App
 pub fn run() {
     App::default()
         // Bevy Plugins
@@ -50,12 +75,12 @@ pub fn run() {
                 events::connect_events::<Main>,
                 events::disconnect_events::<Main>,
                 events::reject_events::<Main>,
-                events::message_events_main,
+                events::message_events::<Main, StringMessageA>,
 
                 events::connect_events::<Alt>,
                 events::disconnect_events::<Alt>,
                 events::reject_events::<Alt>,
-                events::message_events_alt,
+                events::message_events::<Alt, StringMessageB>,
             )
                 .chain()
                 .in_set(ReceiveEvents),
