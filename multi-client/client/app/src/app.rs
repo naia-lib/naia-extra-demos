@@ -121,18 +121,5 @@ impl App {
                 // info!("All clients disconnected!");
             }
         }
-
-        if self.client_runner_b.is_connected() {
-
-        } else {
-            if self.client_runner_c.is_connected() {
-                if self.client_runner_b.is_disconnected() {
-                    let runner_c_count = self.client_runner_c.message_count();
-                    if runner_c_count > 15 {
-                        self.client_runner_b.connect_to_server_b();
-                    }
-                }
-            }
-        }
     }
 }
