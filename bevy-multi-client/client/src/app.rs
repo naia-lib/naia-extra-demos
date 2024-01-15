@@ -5,10 +5,10 @@ use bevy::{
     DefaultPlugins,
 };
 
-use naia_bevy_client::{ClientConfig, Plugin as ClientPlugin, ReceiveEvents, Message};
+use naia_bevy_client::{ClientConfig, Plugin as ClientPlugin, ReceiveEvents, Message, Replicate};
 
-use bevy_multi_client_server_a_protocol::{protocol as protocolA, messages::StringMessage as StringMessageA};
-use bevy_multi_client_server_b_protocol::{protocol as protocolB, messages::StringMessage as StringMessageB};
+use bevy_multi_client_server_a_protocol::{protocol as protocolA, messages::StringMessage as StringMessageA, MyComponent as MyComponentA};
+use bevy_multi_client_server_b_protocol::{protocol as protocolB, messages::StringMessage as StringMessageB, MyComponent as MyComponentB};
 
 use crate::resources::Global;
 use crate::systems::{events, init};
@@ -103,6 +103,22 @@ impl IsStringMessage for StringMessageB {
     }
 }
 
+// IsComponent
+pub trait IsComponent: Replicate {
+    fn value(&self) -> i16;
+}
+
+impl IsComponent for MyComponentA {
+    fn value(&self) -> i16 {
+        *self.x
+    }
+}
+impl IsComponent for MyComponentB {
+    fn value(&self) -> i16 {
+        *self.x
+    }
+}
+
 // App
 pub fn run() {
     App::default()
@@ -126,16 +142,19 @@ pub fn run() {
                 events::disconnect_events::<Main>,
                 events::reject_events::<Main>,
                 events::message_events::<Main, StringMessageA>,
+                events::update_component_events::<Main, MyComponentA>,
 
                 events::connect_events::<Alt>,
                 events::disconnect_events::<Alt>,
                 events::reject_events::<Alt>,
                 events::message_events::<Alt, StringMessageB>,
+                events::update_component_events::<Alt, MyComponentB>,
 
                 events::connect_events::<Alt2>,
                 events::disconnect_events::<Alt2>,
                 events::reject_events::<Alt2>,
                 events::message_events::<Alt2, StringMessageB>,
+                events::update_component_events::<Alt2, MyComponentB>,
 
                 events::toggle_between_alt_clients,
             )

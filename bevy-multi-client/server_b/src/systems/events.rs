@@ -1,6 +1,7 @@
 use bevy_ecs::{
     event::EventReader, system::{Local, Query},
 };
+use bevy_ecs::change_detection::ResMut;
 use bevy_log::info;
 
 use naia_bevy_server::{
@@ -13,6 +14,7 @@ use naia_bevy_server::{
 };
 
 use bevy_multi_client_server_b_protocol::{messages::{Auth, StringMessage}, MyComponent};
+use crate::resources::Global;
 
 use crate::SERVER_LETTER;
 
@@ -32,11 +34,14 @@ pub fn auth_events(mut server: Server, mut event_reader: EventReader<AuthEvents>
 
 pub fn connect_events(
     mut server: Server,
+    mut global: ResMut<Global>,
     mut event_reader: EventReader<ConnectEvent>,
 ) {
     for ConnectEvent(user_key) in event_reader.read() {
         let address = server
             .user_mut(user_key)
+            // Add User to the main Room
+            .enter_room(&global.main_room_key)
             // Get User's address for logging
             .address();
 

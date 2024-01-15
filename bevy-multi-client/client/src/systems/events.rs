@@ -1,16 +1,33 @@
 
-use bevy::prelude::{info, EventReader, ResMut};
+use bevy::prelude::{info, EventReader, ResMut, Query};
 
 use naia_bevy_client::{
     default_channels::UnorderedReliableChannel,
     events::{ConnectEvent, DisconnectEvent, MessageEvents, RejectEvent},
     Client
 };
+use naia_bevy_client::events::UpdateComponentEvents;
 use naia_bevy_client::transport::webrtc::Socket;
 
 use bevy_multi_client_server_b_protocol::messages::Auth as AuthB;
 
 use crate::{app::{Alt, Alt2, ClientName, IsStringMessage}, resources::Global};
+use crate::app::IsComponent;
+
+pub fn update_component_events<T: ClientName, C: IsComponent>(
+    mut event_reader: EventReader<UpdateComponentEvents<T>>,
+    mut component_query: Query<&C>,
+) {
+    for events in event_reader.read() {
+        // Update square position
+        for (_server_tick, updated_entity) in events.read::<C>() {
+            let Ok(component) = component_query.get(updated_entity) else {
+                panic!("Shouldn't happen");
+            };
+            info!("Client<{}> component updated to: {}", T::name(), component.value());
+        }
+    }
+}
 
 pub fn connect_events<T: ClientName>(
     client: Client<T>,
