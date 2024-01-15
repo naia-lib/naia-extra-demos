@@ -1,7 +1,6 @@
 use bevy_ecs::{
-    event::EventReader,
+    event::EventReader, system::{Local, Query},
 };
-use bevy_ecs::system::Local;
 use bevy_log::info;
 
 use naia_bevy_server::{
@@ -13,7 +12,7 @@ use naia_bevy_server::{
     Server,
 };
 
-use bevy_multi_client_server_b_protocol::messages::{Auth, StringMessage};
+use bevy_multi_client_server_b_protocol::{messages::{Auth, StringMessage}, MyComponent};
 
 use crate::SERVER_LETTER;
 
@@ -63,6 +62,7 @@ pub fn tick_events(
     mut server: Server,
     mut tick_reader: EventReader<TickEvent>,
     mut tick_count: Local<u32>,
+    mut component_q: Query<&mut MyComponent>,
 ) {
     let mut has_ticked = false;
 
@@ -88,6 +88,26 @@ pub fn tick_events(
         }
 
         *tick_count += 1;
+
+        // Update scopes of entities
+        for (_, user_key, entity) in server.scope_checks() {
+
+            if let Ok(mut component) = component_q.get_mut(entity) {
+                *component.x += 1;
+
+                if *component.x > 10 {
+                    *component.x = 0;
+                }
+
+                info!("Server {} updated MyComponent to x: {}", SERVER_LETTER, *component.x);
+
+                if *component.x > 3 && *component.x < 7 {
+                    server.user_scope(&user_key).include(&entity);
+                } else {
+                    server.user_scope(&user_key).exclude(&entity);
+                }
+            }
+        }
     }
 }
 

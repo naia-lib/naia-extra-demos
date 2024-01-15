@@ -28,6 +28,7 @@ use bevy_log::{info, LogPlugin};
 
 use naia_bevy_server::{Plugin as ServerPlugin, ReceiveEvents, ServerConfig};
 
+mod resources;
 mod systems;
 use systems::{events, init};
 

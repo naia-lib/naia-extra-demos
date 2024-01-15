@@ -1,7 +1,6 @@
 use bevy_ecs::{
-    event::EventReader,
+    event::EventReader, change_detection::ResMut, system::{Local, Query}
 };
-use bevy_ecs::system::Local;
 use bevy_log::info;
 
 use naia_bevy_server::{
@@ -13,9 +12,9 @@ use naia_bevy_server::{
     Server,
 };
 
-use bevy_multi_client_server_a_protocol::messages::{Auth, StringMessage};
+use bevy_multi_client_server_a_protocol::{messages::{Auth, StringMessage}, MyComponent};
 
-use crate::LETTER;
+use crate::{LETTER, resources::Global};
 
 pub fn auth_events(mut server: Server, mut event_reader: EventReader<AuthEvents>) {
     for events in event_reader.read() {
@@ -33,11 +32,14 @@ pub fn auth_events(mut server: Server, mut event_reader: EventReader<AuthEvents>
 
 pub fn connect_events(
     mut server: Server,
+    mut global: ResMut<Global>,
     mut event_reader: EventReader<ConnectEvent>,
 ) {
     for ConnectEvent(user_key) in event_reader.read() {
         let address = server
             .user_mut(user_key)
+            // Add User to the main Room
+            .enter_room(&global.main_room_key)
             // Get User's address for logging
             .address();
 
@@ -63,6 +65,7 @@ pub fn tick_events(
     mut server: Server,
     mut tick_reader: EventReader<TickEvent>,
     mut tick_count: Local<u32>,
+    mut component_q: Query<&mut MyComponent>,
 ) {
     let mut has_ticked = false;
 
@@ -88,6 +91,26 @@ pub fn tick_events(
         }
 
         *tick_count += 1;
+
+        // Update scopes of entities
+        for (_, user_key, entity) in server.scope_checks() {
+
+            if let Ok(mut component) = component_q.get_mut(entity) {
+                *component.x += 1;
+
+                if *component.x > 10 {
+                    *component.x = 0;
+                }
+
+                info!("Server {} updated entity to x: {}", LETTER, *component.x);
+
+                if *component.x > 3 && *component.x < 7 {
+                    server.user_scope(&user_key).include(&entity);
+                } else {
+                    server.user_scope(&user_key).exclude(&entity);
+                }
+            }
+        }
     }
 }
 

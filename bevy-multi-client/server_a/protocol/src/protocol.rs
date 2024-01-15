@@ -14,6 +14,24 @@ pub fn protocol() -> Protocol {
         .add_default_channels()
         // Messages
         .add_plugin(MessagesPlugin)
+        // Component
+        .add_component::<MyComponent>()
         // Build Protocol
         .build()
+}
+
+// Component
+use bevy_ecs::prelude::Component;
+
+use naia_bevy_shared::{Property, Replicate};
+
+#[derive(Component, Replicate)]
+pub struct MyComponent {
+    pub x: Property<i16>,
+}
+
+impl MyComponent {
+    pub fn new(x: i16) -> Self {
+        Self::new_complete(x)
+    }
 }
